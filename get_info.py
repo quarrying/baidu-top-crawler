@@ -16,10 +16,10 @@ def escape_records(records):
 
     
 def save_markdown(filename, records, header, title):
+    records = escape_records(records)
     dst_records = ['## {}'.format(title)]
     dst_records.append('|'.join(header))
     dst_records.append('|'.join(['---']*len(header)))
-    records = escape_records(records)
     for record in records:
         dst_records.append('|'.join(record))
     with open(filename, 'w', encoding='utf-8') as f:
