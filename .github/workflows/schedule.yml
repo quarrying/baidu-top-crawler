@@ -5,7 +5,7 @@ name: Get Baidu Top
 
 on:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "0 0 */2 * * ? *"
 
 jobs:
   build:
