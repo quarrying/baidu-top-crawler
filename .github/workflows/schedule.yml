@@ -1,11 +1,11 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Daily Github-Trending
+name: Get Baidu Top
 
 on:
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "0 */2 * * *"
 
 jobs:
   build:
@@ -24,9 +24,9 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: Run get_info
+    - name: Run crawl_baidu_top.py
       run: |
-        python get_info.py
+        python crawl_baidu_top.py
     # Runs a set of commands using the runners shell
     - name: push to origin master
       run: |
@@ -35,5 +35,5 @@ jobs:
         git config --global user.email "quarrying@qq.com"
         
         git add -A
-        git commit -m $(date '+%Y-%m-%d')
+        git commit -m $(date '+%Y%m%d_%H%M')
         git push
