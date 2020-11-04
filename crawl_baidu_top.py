@@ -20,8 +20,9 @@ def save_as_json(filename, records):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as f:
             dict_obj = json.load(f, object_pairs_hook=OrderedDict)
+    time_str = str(get_utc8now())
     for keyword, search_index in records:
-        time_count_dict = {'time': str(get_utc8now()), 'count': search_index}
+        time_count_dict = {'time': time_str, 'count': search_index}
         dict_obj.setdefault(keyword, []).append(time_count_dict)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(dict_obj, f, indent=4, separators=(',',': '),
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     year_str = now.strftime('%Y')
     date_str = now.strftime('%Y%m%d')
     os.makedirs(year_str, exist_ok=True)
-    filename = os.path.join(year_str, '{} 今日热点.json'.format(date_str))
+    filename = os.path.join(year_str, '{} 实时热点.json'.format(date_str))
     
     records = crawl_baidu_top()
     save_as_json(filename, records)
