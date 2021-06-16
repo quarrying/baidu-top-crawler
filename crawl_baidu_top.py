@@ -39,8 +39,7 @@ def crawl_baidu_top(board='realtime'):
         last_tag = item.find('div', {'class': 'hot-index_1Bl1a'})
         if (title_tag is not None) and (last_tag is not None):
             title_tag.div.extract()
-            title = title_tag.text.strip()
-            titles.append(title)
+            titles.append(title_tag.text.strip())
             search_indices.append(last_tag.text.strip())
     return list(zip(titles, search_indices))
 
