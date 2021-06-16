@@ -29,21 +29,21 @@ def save_as_json(filename, records):
                   ensure_ascii=False, sort_keys=False)
 
 
-def crawl_baidu_top(buzz_no=1):
-    response = requests.get('http://top.baidu.com/buzz?b={}'.format(buzz_no))
-    response.encoding = 'gb18030'
+def crawl_baidu_top(board='realtime'):
+    response = requests.get('https://top.baidu.com/board?tab={}'.format(board))
     soup = BeautifulSoup(response.text, 'html.parser')
-    table_tag = soup.find('table', {'class': 'list-table'})
-    item_tags = table_tag.find_all('tr')
-    keywords, search_indices = [], []
-    for item in item_tags:
-        keyword_tag = item.find('td', {'class': 'keyword'})
-        last_tag = item.find('td', {'class': 'last'})
-        if (keyword_tag is not None) and (last_tag is not None):
-            keyword_title_tag = keyword_tag.find('a', {'class': 'list-title'})
-            keywords.append(keyword_title_tag.text.strip())
+    record_tags = soup.find_all('div', {'class': 'category-wrap_iQLoo'})
+    titles, search_indices = [], []
+    for item in record_tags:
+        title_tag = item.find('a', {'class': 'title_dIF3B'})
+        last_tag = item.find('div', {'class': 'hot-index_1Bl1a'})
+        if (title_tag is not None) and (last_tag is not None):
+            title = title_tag.text.strip()
+            if title.endswith('  热'):
+                title = title[:-len('  热')]
+            titles.append(title)
             search_indices.append(last_tag.text.strip())
-    return list(zip(keywords, search_indices))
+    return list(zip(titles, search_indices))
 
 
 if __name__ == '__main__':
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     year_str = now.strftime('%Y')
     date_str = now.strftime('%Y%m%d')
     os.makedirs(year_str, exist_ok=True)
-    filename = os.path.join(year_str, '{} 实时热点.json'.format(date_str))
+    filename = os.path.join(year_str, '{} 百度实时热点.json'.format(date_str))
     
     records = crawl_baidu_top()
     save_as_json(filename, records)
