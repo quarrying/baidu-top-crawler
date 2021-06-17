@@ -21,9 +21,9 @@ def save_as_json(filename, records):
         with open(filename, 'r', encoding='utf-8') as f:
             dict_obj = json.load(f, object_pairs_hook=OrderedDict)
     time_str = str(get_utc8now())
-    for keyword, search_index in records:
-        time_count_dict = {'time': time_str, 'count': search_index}
-        dict_obj.setdefault(keyword, []).append(time_count_dict)
+    for title, hot_index in records:
+        time_count_dict = {'time': time_str, 'count': hot_index}
+        dict_obj.setdefault(title, []).append(time_count_dict)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(dict_obj, f, indent=4, separators=(',',': '),
                   ensure_ascii=False, sort_keys=False)
@@ -33,15 +33,15 @@ def crawl_baidu_top(board='realtime'):
     response = requests.get('https://top.baidu.com/board?tab={}'.format(board))
     soup = BeautifulSoup(response.text, 'html.parser')
     record_tags = soup.find_all('div', {'class': 'category-wrap_iQLoo'})
-    titles, search_indices = [], []
+    titles, hot_indices = [], []
     for item in record_tags:
         title_tag = item.find('a', {'class': 'title_dIF3B'})
-        last_tag = item.find('div', {'class': 'hot-index_1Bl1a'})
-        if (title_tag is not None) and (last_tag is not None):
+        hot_index_tag = item.find('div', {'class': 'hot-index_1Bl1a'})
+        if (title_tag is not None) and (hot_index_tag is not None):
             title_tag.div.extract()
             titles.append(title_tag.text.strip())
-            search_indices.append(last_tag.text.strip())
-    return list(zip(titles, search_indices))
+            hot_indices.append(hot_index_tag.text.strip())
+    return list(zip(titles, hot_indices))
 
 
 if __name__ == '__main__':
