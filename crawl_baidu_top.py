@@ -22,7 +22,7 @@ def save_as_json(filename, records):
             dict_obj = json.load(f, object_pairs_hook=OrderedDict)
     time_str = str(get_utc8now())
     for title, hot_index in records:
-        time_count_dict = {'time': time_str, 'count': hot_index}
+        time_count_dict = {'time': time_str, 'hot_index': hot_index}
         dict_obj.setdefault(title, []).append(time_count_dict)
     with open(filename, 'w', encoding='utf-8') as f:
         json.dump(dict_obj, f, indent=4, separators=(',',': '),
@@ -35,13 +35,12 @@ def crawl_baidu_top(board='realtime'):
     record_tags = soup.find_all('div', {'class': 'category-wrap_iQLoo'})
     titles, hot_indices = [], []
     for item in record_tags:
-        title_tag = item.find('a', {'class': 'title_dIF3B'})
+        title_tag = item.find('div', {'class': 'c-single-text-ellipsis'})
         hot_index_tag = item.find('div', {'class': 'hot-index_1Bl1a'})
         if (title_tag is not None) and (hot_index_tag is not None):
-            title_tag.div.extract()
             titles.append(title_tag.text.strip())
             hot_indices.append(hot_index_tag.text.strip())
-    return list(zip(titles, hot_indices))
+    return titles, hot_indices
 
 
 if __name__ == '__main__':
@@ -51,7 +50,8 @@ if __name__ == '__main__':
     os.makedirs(year_str, exist_ok=True)
     filename = os.path.join(year_str, '{} 百度实时热点.json'.format(date_str))
     
-    records = crawl_baidu_top()
+    titles, hot_indices = crawl_baidu_top()
+    records = list(zip(titles, hot_indices))
     save_as_json(filename, records)
     
     
